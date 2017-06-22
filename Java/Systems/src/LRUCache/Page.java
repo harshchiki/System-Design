@@ -7,6 +7,6 @@ public class Page {
 	}
 	
 	public int hashCode(){
-		return System.identityHashCode(this.content); // returns 0 if reference is null
+		return this.content.hashCode(); // returns 0 if reference is null
 	}
 }

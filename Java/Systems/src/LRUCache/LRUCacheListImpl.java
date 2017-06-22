@@ -3,9 +3,11 @@ import java.util.Objects;
 
 
 /**
- * Insertion from tail
+ * Insertion from tail - MOST RECENTLY USED
+ * 	- on insert
+ * 	- on use of a page
  * 
- * Deletion for head
+ * Deletion for head - LEAST RECENTLY USED
  * 
  * @author Harsh
  *
@@ -30,30 +32,39 @@ public class LRUCacheListImpl implements LRUCachList {
 	}
 
 	@Override
-	public void insert(LRUCacheListNode LRUCacheListNode) {
+	public void insert(LRUCacheListNode lRUCacheListNode) {
 		if(tail == null && head == null){
-			tail = head = LRUCacheListNode;			
+			// list is empty
+			tail = head = lRUCacheListNode;			
 		}else{
 			if(size == MAX_SIZE){
+				// list is full
 				this.remove();
 			}
+			
+			// insertion to made at the tail
+			// this denotes the most recently used node
 			LRUCacheListNode nodeAtTail = tail;
-			nodeAtTail.prev = LRUCacheListNode;
-			LRUCacheListNode.next = nodeAtTail;
-			tail = LRUCacheListNode;
+			nodeAtTail.prev = lRUCacheListNode;
+			lRUCacheListNode.next = nodeAtTail;
+			tail = lRUCacheListNode;
 		}
+		// maintain size
 		size++;
 	}
 
 	@Override
 	public LRUCacheListNode remove() {
 		if(head == null){
+			// empty list 
 			return null;
 		}else{
+			// making the head point to the node prev to the current head.
 			LRUCacheListNode nodeAtHead = head;
 			nodeAtHead.prev.next = null;
 			head = nodeAtHead.prev;
 			nodeAtHead.prev = nodeAtHead.next = null;
+			//maintain size
 			size--;
 			return nodeAtHead;
 		}
@@ -62,12 +73,14 @@ public class LRUCacheListImpl implements LRUCachList {
 	@Override
 	public LRUCacheListNode removeLRUCacheListNode(LRUCacheListNode nodeToBeRemoved) {
 		if(head == null && tail == null){
+			// empty list
 			return null;
 		}
-
+		// take the reference of the tail - and keep moving forward until null
 		LRUCacheListNode node = tail;
 		while(node != null){
-			if(Objects.equals(node, nodeToBeRemoved)){
+			if(node.equals(nodeToBeRemoved)){
+				// node to be removed is found
 				LRUCacheListNode prevNode = node.prev;
 				LRUCacheListNode nxtNode = node.next;
 
@@ -103,6 +116,11 @@ public class LRUCacheListImpl implements LRUCachList {
 
 	}
 
+	/*
+	 * remove the node and insert to the list
+	 * (non-Javadoc)
+	 * @see LRUCache.LRUCachList#bringToHead(LRUCache.LRUCacheListNode)
+	 */
 	@Override
 	public void bringToHead(LRUCacheListNode nodeToBeBroughtForward) {
 		LRUCacheListNode removedNode = this.removeLRUCacheListNode(nodeToBeBroughtForward);
